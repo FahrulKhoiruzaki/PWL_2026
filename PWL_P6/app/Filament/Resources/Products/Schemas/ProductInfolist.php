@@ -8,6 +8,8 @@ use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\IconEntry;
 use Filament\Schemas\Schema;
 
+use function Laravel\Prompts\number;
+
 class ProductInfolist
 {
     public static function configure(Schema $schema): Schema
@@ -26,7 +28,7 @@ class ProductInfolist
                         TextEntry::make('sku')
                             ->label('Product SKU')
                             ->badge()
-                            ->color('success'),
+                            ->color('warning'),
                         TextEntry::make('description')
                             ->label('Product Description'),
                         TextEntry::make('created_at')
@@ -43,9 +45,11 @@ class ProductInfolist
                             ->label('Product Price')
                             ->weight('bold')
                             ->color('primary')
-                            ->icon('heroicon-o-currency-dollar'),
+                            ->icon('heroicon-o-currency-dollar')
+                            ->formatStateUsing(fn ($state) => 'Rp ' .number_format($state, 0, ',', '.')),
                         TextEntry::make('stock')
-                            ->label('Product Stock'),
+                            ->label('Product Stock')
+                            ->icon('heroicon-o-cube'),
                     ])
                 ->columnSpanFull(),
 
