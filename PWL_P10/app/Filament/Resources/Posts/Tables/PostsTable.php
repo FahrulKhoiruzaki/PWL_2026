@@ -2,18 +2,21 @@
 
 namespace App\Filament\Resources\Posts\Tables;
 
-use Dom\Text;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Tables\Table;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\ColorColumn;
-use Filament\Tables\Columns\ImageColumn;
-use Filament\Tables\Columns\IconColumn;
-use Filament\Tables\Filters\Filter;
+use Filament\Actions\ReplicateAction;
+use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DatePicker;
+use Filament\Tables\Columns\ColorColumn;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\ImageColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Table;
 
 class PostsTable
 {
@@ -45,14 +48,15 @@ class PostsTable
                     ->toggleable()
                     ->disk('public'),
                 TextColumn::make('created_at')
-                    ->Label('Created At')
+                    ->label('Created At')
                     ->toggleable()
                     ->dateTime()
                     ->sortable(),
                 IconColumn::make('published')
                     ->toggleable()
                     ->boolean(),
-            ])->defaultSort('created_at', 'asc')
+            ])
+            ->defaultSort('created_at', 'asc')
             ->filters([
                 Filter::make('created_at')
                     ->label('Creation Date')
@@ -65,14 +69,35 @@ class PostsTable
                             $data['created_at'],
                             fn ($query, $date) => $query->whereDate('created_at', $date)
                         );
-                }),
+                    }),
                 SelectFilter::make('category_id')
                     ->relationship('category', 'name')
                     ->label('Category')
                     ->preload(),
             ])
             ->recordActions([
-                EditAction::make(),
+                ReplicateAction::make()
+                    ->label('Replicate')
+                    ->icon('heroicon-o-document-duplicate'),
+                EditAction::make()
+                    ->label('Edit')
+                    ->icon('heroicon-o-pencil-square'),
+                DeleteAction::make()
+                    ->label('Delete')
+                    ->icon('heroicon-o-trash'),
+                Action::make('status')
+                    ->label('Status Change')
+                    ->icon('heroicon-o-check-circle')
+                    ->requiresConfirmation()
+                    ->schema([
+                        Checkbox::make('published')
+                            ->label('Published')
+                            ->default(fn ($record): bool => $record->published),
+                    ])
+                    ->action(function ($record, $data) {
+                        $record->update(['published' => $data['published'],
+                        ]);
+                    }),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
