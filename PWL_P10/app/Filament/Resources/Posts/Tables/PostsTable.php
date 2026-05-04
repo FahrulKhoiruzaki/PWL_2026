@@ -45,6 +45,7 @@ class PostsTable
                 ColorColumn::make('color')
                     ->toggleable(),
                 ImageColumn::make('image')
+                    ->label('Image')
                     ->toggleable()
                     ->disk('public'),
                 TextColumn::make('created_at')

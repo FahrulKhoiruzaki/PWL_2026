@@ -62,6 +62,7 @@ class PostForm
                         ->icon('heroicon-o-photo')
                         ->schema([
                             FileUpload::make("image")
+                                ->label('Image')
                                 ->required()
                                 ->disk("public")
                                 ->directory("posts"),
@@ -70,7 +71,10 @@ class PostForm
                     Section::make("Meta Information")
                         ->icon('heroicon-o-information-circle')
                         ->schema([
-                            TagsInput::make("tags"),
+                            Select::make("tags")
+                                ->relationship("tags", "name")
+                                ->multiple()
+                                ->preload(),
                             Checkbox::make("published"),
                             DateTimePicker::make("published_at"),
                         ]),
