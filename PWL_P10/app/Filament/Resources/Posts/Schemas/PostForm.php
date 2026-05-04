@@ -2,22 +2,18 @@
 
 namespace App\Filament\Resources\Posts\Schemas;
 
-use BladeUI\Icons\Components\Icon;
+use App\Models\Category;
 use Filament\Schemas\Schema;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\MarkdownEditor;
-use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Schemas\Components\Section;
-use Filament\Support\Icons\Heroicon;
 use Filament\Schemas\Components\Group;
-
-use function Laravel\Prompts\select;
 
 class PostForm
 {
@@ -48,9 +44,10 @@ class PostForm
                                     ]),
                                 Select::make('category_id')
                                     ->relationship('category', 'name')
+                                    ->options(Category::all()->pluck("name", "id"))
                                     ->required()
-                                    ->searchable()
-                                    ->preload(),
+                                    // ->preload()
+                                    ->searchable(),
                                 ColorPicker::make('color'),
                             ])->columns(2),
 
